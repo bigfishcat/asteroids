@@ -8,6 +8,7 @@
 
 #import "Director.h"
 #import "Sprite.h"
+#import "Asteroid.h"
 
 @interface Director()
 {
@@ -50,23 +51,25 @@
         self.spaceship = [[Sprite alloc] initWithName:@"spaceship"
                                              andFrame:CGRectMake(-shipSize.width/2, _bottomLine,
                                                                  shipSize.width, shipSize.height)];
-        [self.scene addSprite:self.spaceship];
+        [self.scene addObject:self.spaceship];
         self.fireButton = [[Sprite alloc] initWithFrame:CGRectMake(1 - buttonSize * 1.2,
                                                                    _bottomLine - buttonSize * 1.2,
                                                                    buttonSize, buttonSize)
                                                andNames:@"fire_button", @"fire_button_pressed", nil];
-        [self.scene addSprite:self.fireButton];
-        self.crossButton = [[Sprite alloc] initWithFrame:CGRectMake(buttonSize * .2 - 1,
+        [self.scene addObject:self.fireButton];
+        self.crossButton = [[Sprite alloc] initWithName:@"cross_button"
+                                               andFrame:CGRectMake(buttonSize * .2 - 1,
                                                                    _bottomLine - buttonSize * 1.2,
-                                                                   2 * buttonSize, 2 * buttonSize)
-                                               andNames:@"cross_button", nil];
-        [self.scene addSprite:self.crossButton];
+                                                                   2 * buttonSize, 2 * buttonSize)];
+        [self.scene addObject:self.crossButton];
         _fireBlasts = [[NSMutableArray alloc] init];
         _amunition = [[NSMutableSet alloc] init];
         
         CADisplayLink* displayLink = [CADisplayLink displayLinkWithTarget:self
                                                                  selector:@selector(render:)];
         [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+        
+        [self createAsteroid];
     }
     return self;
 }
@@ -78,14 +81,19 @@
         [blast moveBy:CGVectorMake(0, 0.05)];
         if (![blast isInRect:self.scene.glFrame])
         {
-            [self.scene removeSprite:blast];
+            [self.scene removeObject:blast];
             [_amunition addObject:blast];
             [_fireBlasts removeObject:blast];
         }
         
     }
-//    [self.spaceship moveTo:CGPointMake(sin(CACurrentMediaTime()) / 5 * 4 - .125, -1)];
     [self.scene render];
+}
+
+-(void)createAsteroid
+{
+    Asteroid * asteroid = [[Asteroid alloc] initWithPosition:CGPointMake(0, 0)];
+    [self.scene addObject:asteroid];
 }
 
 -(void)fire:(NSTimer*)sender
@@ -107,7 +115,7 @@
     {
         blast = [[Sprite alloc] initWithName:@"blast" andFrame:blastFrame];
     }
-    [self.scene addSprite:blast];
+    [self.scene addObject:blast];
     [_fireBlasts addObject:blast];
 }
 

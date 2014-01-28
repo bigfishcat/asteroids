@@ -61,12 +61,12 @@
     }
 }
 
--(void) addSprite:(Sprite*)sprite
+-(void) addObject:(GLObject*)sprite
 {
     [self.sprites addObject:sprite];
 }
 
--(void)removeSprite:(Sprite*)sprite
+-(void)removeObject:(GLObject*)sprite
 {
     [self.sprites removeObject:sprite];
     
@@ -231,7 +231,7 @@
                     andNear:.01
                      andFar:100];
     
-    for (Sprite* sprite in self.sprites)
+    for (GLObject* sprite in self.sprites)
         [sprite drawWithAttrib:&_vertexAttrib andFrameSize:frameSize];
     
     [_context presentRenderbuffer:GL_RENDERBUFFER];

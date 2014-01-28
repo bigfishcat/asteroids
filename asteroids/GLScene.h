@@ -25,15 +25,15 @@ typedef struct {
 
 #define MAX_SPRITE_COUNT 100
 
-@class Sprite;
+@class GLObject;
 
 @interface GLScene : UIView
 
 
 -(void)load;
 -(void)render;
--(void)addSprite:(Sprite*)sprite;
--(void)removeSprite:(Sprite*)sprite;
+-(void)addObject:(GLObject*)sprite;
+-(void)removeObject:(GLObject*)sprite;
 
 @property (nonatomic) NSObject<TouchDelegate>* touchDelegate;
 @property (readonly) CGRect glFrame;

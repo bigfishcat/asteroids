@@ -7,17 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "GLScene.h"
+#import "GLObject.h"
 
-@interface Sprite : NSObject
+@interface Sprite : GLObject
 
 +(void)reinitSprites;
 
 -(id)initWithName:(NSString*)name andFrame:(CGRect)frame;
 -(id)initWithFrame:(CGRect)frame andNames:(NSString*)name1, ... NS_REQUIRES_NIL_TERMINATION;
--(void)drawWithAttrib:(VertexAttrib*)vertexAttrib andFrameSize:(CGSize)frameSize;
--(void)moveTo:(CGPoint)point;
--(void)moveBy:(CGVector)vector;
 -(void)moveBy:(CGVector)vector inRect:(CGRect)bound;
 -(void)changeSpriteFrameTo:(NSUInteger)index;
 -(Boolean)checkPoint:(CGPoint)point;

@@ -33,6 +33,9 @@
 		8D73068D1896FAB60033FCB6 /* Sprite.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D7306881896FAB60033FCB6 /* Sprite.m */; };
 		8D73068E1896FAB60033FCB6 /* Vertex.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 8D7306891896FAB60033FCB6 /* Vertex.glsl */; };
 		8D7306901897F0620033FCB6 /* cross_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 8D73068F1897F0620033FCB6 /* cross_button.png */; };
+		8D730693189805A80033FCB6 /* Asteroid.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D730692189805A80033FCB6 /* Asteroid.m */; };
+		8D73069618984B0C0033FCB6 /* GLObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D73069518984B0C0033FCB6 /* GLObject.m */; };
+		8D730698189851550033FCB6 /* stone.png in Resources */ = {isa = PBXBuildFile; fileRef = 8D730697189851550033FCB6 /* stone.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,6 +84,11 @@
 		8D7306881896FAB60033FCB6 /* Sprite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Sprite.m; sourceTree = "<group>"; };
 		8D7306891896FAB60033FCB6 /* Vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Vertex.glsl; sourceTree = "<group>"; };
 		8D73068F1897F0620033FCB6 /* cross_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cross_button.png; sourceTree = "<group>"; };
+		8D730691189805A80033FCB6 /* Asteroid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Asteroid.h; sourceTree = "<group>"; };
+		8D730692189805A80033FCB6 /* Asteroid.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Asteroid.m; sourceTree = "<group>"; };
+		8D73069418984B0C0033FCB6 /* GLObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLObject.h; sourceTree = "<group>"; };
+		8D73069518984B0C0033FCB6 /* GLObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLObject.m; sourceTree = "<group>"; };
+		8D730697189851550033FCB6 /* stone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = stone.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,8 +155,12 @@
 				8D7306831896FAB60033FCB6 /* Director.m */,
 				8D7306851896FAB60033FCB6 /* GLScene.h */,
 				8D7306861896FAB60033FCB6 /* GLScene.m */,
+				8D73069418984B0C0033FCB6 /* GLObject.h */,
+				8D73069518984B0C0033FCB6 /* GLObject.m */,
 				8D7306871896FAB60033FCB6 /* Sprite.h */,
 				8D7306881896FAB60033FCB6 /* Sprite.m */,
+				8D730691189805A80033FCB6 /* Asteroid.h */,
+				8D730692189805A80033FCB6 /* Asteroid.m */,
 				8D7306841896FAB60033FCB6 /* Fragment.glsl */,
 				8D7306891896FAB60033FCB6 /* Vertex.glsl */,
 				8D7306771896FA980033FCB6 /* Resources */,
@@ -195,6 +207,7 @@
 		8D7306771896FA980033FCB6 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				8D730697189851550033FCB6 /* stone.png */,
 				8D73068F1897F0620033FCB6 /* cross_button.png */,
 				8D7306781896FA980033FCB6 /* blast.png */,
 				8D7306791896FA980033FCB6 /* fire_button.png */,
@@ -282,6 +295,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D7306811896FA980033FCB6 /* spaceship.png in Resources */,
+				8D730698189851550033FCB6 /* stone.png in Resources */,
 				8D7306571896FA1C0033FCB6 /* Images.xcassets in Resources */,
 				8D7306491896FA1C0033FCB6 /* InfoPlist.strings in Resources */,
 				8D73067F1896FA980033FCB6 /* fire_button_pressed.png in Resources */,
@@ -311,11 +325,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D7306551896FA1C0033FCB6 /* ViewController.m in Sources */,
+				8D730693189805A80033FCB6 /* Asteroid.m in Sources */,
 				8D73068A1896FAB60033FCB6 /* Director.m in Sources */,
 				8D73068D1896FAB60033FCB6 /* Sprite.m in Sources */,
 				8D73068C1896FAB60033FCB6 /* GLScene.m in Sources */,
 				8D73064F1896FA1C0033FCB6 /* AppDelegate.m in Sources */,
 				8D73064B1896FA1C0033FCB6 /* main.m in Sources */,
+				8D73069618984B0C0033FCB6 /* GLObject.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
