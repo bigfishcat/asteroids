@@ -14,11 +14,13 @@
     NSTimer * _shooter;
     NSMutableArray * _fireBlasts;
     NSMutableSet * _amunition;
+    GLfloat _bottomLine;
 }
 
 @property (nonatomic) GLScene * scene;
 @property (nonatomic) Sprite * spaceship;
 @property (nonatomic) Sprite * fireButton;
+@property (nonatomic) Sprite * crossButton;
 
 @end
 
@@ -39,12 +41,23 @@
                                               repeats:YES];
         self.scene = glScene;
         self.scene.touchDelegate = self;
+        GLfloat buttonSize = .25;
+        CGSize shipSize = CGSizeMake(.25, .5);
+        _bottomLine = glScene.glFrame.origin.y + buttonSize * 1.4;
         self.spaceship = [[Sprite alloc] initWithName:@"spaceship"
-                                             andFrame:CGRectMake(-.125, -0.9, .25, .5)];
+                                             andFrame:CGRectMake(-shipSize.width/2, _bottomLine,
+                                                                 shipSize.width, shipSize.height)];
         [self.scene addSprite:self.spaceship];
-        self.fireButton = [[Sprite alloc] initWithFrame:CGRectMake(.70, -1.3, .25, .25)
+        self.fireButton = [[Sprite alloc] initWithFrame:CGRectMake(1 - buttonSize * 1.2,
+                                                                   _bottomLine - buttonSize * 1.2,
+                                                                   buttonSize, buttonSize)
                                                andNames:@"fire_button", @"fire_button_pressed", nil];
         [self.scene addSprite:self.fireButton];
+        self.crossButton = [[Sprite alloc] initWithFrame:CGRectMake(buttonSize * .2 - 1,
+                                                                   _bottomLine - buttonSize * 1.2,
+                                                                   buttonSize, buttonSize)
+                                               andNames:@"cross_button", nil];
+        [self.scene addSprite:self.crossButton];
         _fireBlasts = [[NSMutableArray alloc] init];
         _amunition = [[NSMutableSet alloc] init];
         

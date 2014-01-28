@@ -183,7 +183,6 @@
     
     VertexAttrib attribs = {
         glGetAttribLocation(programHandle, "vertexPosition"),
-        glGetAttribLocation(programHandle, "vertexColor"),
         glGetAttribLocation(programHandle, "texCoordIn"),
         glGetUniformLocation(programHandle, "modelview"),
         glGetUniformLocation(programHandle, "Texture")
@@ -191,7 +190,6 @@
     _vertexAttrib = attribs;
     _projectionUniform = glGetUniformLocation(programHandle, "projection");
     glEnableVertexAttribArray(attribs.positionSlot);
-    glEnableVertexAttribArray(attribs.colorSlot);
     glEnableVertexAttribArray(attribs.texCoordSlot);
 }
 
@@ -230,8 +228,8 @@
                    andRight: 1.
                   andBottom:-1. / (frameSize.width / frameSize.height)
                      andTop: 1. / (frameSize.width / frameSize.height)
-                    andNear:.001
-                     andFar:20];
+                    andNear:.01
+                     andFar:100];
     
     for (Sprite* sprite in self.sprites)
         [sprite drawWithAttrib:&_vertexAttrib andFrameSize:frameSize];

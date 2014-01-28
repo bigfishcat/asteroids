@@ -10,7 +10,6 @@
 
 typedef struct {
     GLuint positionSlot;
-    GLuint colorSlot;
     GLuint texCoordSlot;
     GLuint modelViewUniform;
     GLuint textureUniform;

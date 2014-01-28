@@ -19,8 +19,7 @@ typedef struct
 
 typedef struct
 {
-    GLPoint Position;
-    GLfloat Color[4];
+    GLfloat Position[3];
     GLfloat TexCoord[2];
 } Vertex;
 
@@ -136,7 +135,7 @@ static int zOrder = -MAX_SPRITE_COUNT;
     _size = frame.size;
     for (int i = 0; i < VERTICES_COUNT; i++)
     {
-        Vertex v = {{xs[xi] * (-zOrder), ys[yi] * (-zOrder), zOrder}, {1,1,1,1}, {xi, yi}};
+        Vertex v = {{xs[xi] * (1 - _position.z), ys[yi] * (1 - _position.z), _position.z}, {xi, yi}};
         _vertices[i] = v;
         _indices[i] = i;
         if (++xi >= VERTICES_COUNT / 2)
@@ -147,6 +146,11 @@ static int zOrder = -MAX_SPRITE_COUNT;
     }
 }
 
+const GLubyte Indices[] = {
+    0, 1, 2,
+    2, 3, 1
+};
+
 -(void)setupVBOs
 {
     glGenBuffers(1, &_vertexBuffer);
@@ -155,7 +159,7 @@ static int zOrder = -MAX_SPRITE_COUNT;
     
     glGenBuffers(1, &_indexBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(_indices), _indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
 }
 
 -(void) applyTranslationWithX:(GLfloat)x andY:(GLfloat)y andZ:(GLfloat)z
@@ -183,16 +187,14 @@ static int zOrder = -MAX_SPRITE_COUNT;
     
     glVertexAttribPointer(vertexAttrib->positionSlot, 3, GL_FLOAT, GL_FALSE,
                           sizeof(Vertex), 0);
-    glVertexAttribPointer(vertexAttrib->colorSlot, 4, GL_FLOAT, GL_FALSE,
-                          sizeof(Vertex), (GLvoid*) (sizeof(float) * 3));
     glVertexAttribPointer(vertexAttrib->texCoordSlot, 2, GL_FLOAT, GL_FALSE,
-                          sizeof(Vertex), (GLvoid*) (sizeof(float) * 7));
+                          sizeof(Vertex), (GLvoid*) (sizeof(float) * 3));
     
 //    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, _texture);
 //    glUniform1i(vertexAttrib.textureUniform, 0);
     
-    glDrawElements(GL_TRIANGLE_STRIP, VERTICES_COUNT, GL_UNSIGNED_SHORT, 0);
+    glDrawElements(GL_TRIANGLES, sizeof(Indices)/sizeof(Indices[0]), GL_UNSIGNED_BYTE, 0);
 }
 
 -(void)moveTo:(CGPoint)point
