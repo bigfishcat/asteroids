@@ -32,7 +32,7 @@ typedef struct
     GLuint _indexBuffer;
     Vertex _vertices[VERTICES_COUNT];
     GLushort _indices[VERTICES_COUNT];
-    CGPoint _movement;
+    CGVector _movement;
     GLPoint _position;
     CGSize _size;
 }
@@ -177,8 +177,8 @@ const GLubyte Indices[] = {
 
 -(void) drawWithAttrib:(VertexAttrib*)vertexAttrib andFrameSize:(CGSize)frameSize
 {
-    [self applyTranslationWithX:_movement.x
-                           andY:_movement.y
+    [self applyTranslationWithX:_movement.dx
+                           andY:_movement.dy
                            andZ:0
                    andModelView:vertexAttrib->modelViewUniform];
     
@@ -199,14 +199,29 @@ const GLubyte Indices[] = {
 
 -(void)moveTo:(CGPoint)point
 {
-    _movement.x = (point.x - _position.x) * (-_position.z);
-    _movement.y = (point.y - _position.y) * (-_position.z);
+    _movement.dx = (point.x - _position.x) * (-_position.z);
+    _movement.dy = (point.y - _position.y) * (-_position.z);
 }
 
 -(void)moveBy:(CGVector)vector
 {
-    _movement.x += vector.dx * (-_position.z);
-    _movement.y += vector.dy * (-_position.z);
+    _movement.dx += vector.dx * (-_position.z);
+    _movement.dy += vector.dy * (-_position.z);
+}
+
+-(void)moveBy:(CGVector)vector inRect:(CGRect)bound
+{
+    CGRect frame = self.frame;
+    frame.origin.x += vector.dx;
+    frame.origin.y += vector.dy;
+    if (bound.origin.x > frame.origin.x ||
+        bound.origin.x + bound.size.width < frame.origin.x + frame.size.width)
+        vector.dx = 0;
+    if (bound.origin.y > frame.origin.y||
+        bound.origin.y + bound.size.height < frame.origin.y + frame.size.height)
+        vector.dy = 0;
+    
+    [self moveBy:vector];
 }
 
 -(void)changeSpriteFrameTo:(NSUInteger)index
@@ -222,14 +237,21 @@ const GLubyte Indices[] = {
 
 -(CGRect)frame
 {
-    return CGRectMake(_position.x + _movement.x / (-_position.z),
-                      _position.y + _movement.y / (-_position.z),
+    return CGRectMake(_position.x + _movement.dx / (-_position.z),
+                      _position.y + _movement.dy / (-_position.z),
                       _size.width, _size.height);
 }
 
 -(Boolean)isInRect:(CGRect)rect
 {
     return CGRectContainsRect(rect, self.frame);
+}
+
+-(CGVector)relativeDirection:(CGPoint)point
+{
+    CGFloat x = _position.x + _movement.dx / (-_position.z) + _size.width / 2;
+    CGFloat y = _position.y + _movement.dy / (-_position.z) + _size.height / 2;
+    return CGVectorMake(point.x - x, point.y - y);
 }
 
 @end

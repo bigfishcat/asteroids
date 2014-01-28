@@ -18,9 +18,11 @@
 -(void)drawWithAttrib:(VertexAttrib*)vertexAttrib andFrameSize:(CGSize)frameSize;
 -(void)moveTo:(CGPoint)point;
 -(void)moveBy:(CGVector)vector;
+-(void)moveBy:(CGVector)vector inRect:(CGRect)bound;
 -(void)changeSpriteFrameTo:(NSUInteger)index;
 -(Boolean)checkPoint:(CGPoint)point;
 -(Boolean)isInRect:(CGRect)rect;
+-(CGVector)relativeDirection:(CGPoint)point;
 
 @property (nonatomic, readonly) CGRect frame;
 

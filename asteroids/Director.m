@@ -12,6 +12,8 @@
 @interface Director()
 {
     NSTimer * _shooter;
+    NSTimer * _mover;
+    CGVector _movement;
     NSMutableArray * _fireBlasts;
     NSMutableSet * _amunition;
     GLfloat _bottomLine;
@@ -21,6 +23,7 @@
 @property (nonatomic) Sprite * spaceship;
 @property (nonatomic) Sprite * fireButton;
 @property (nonatomic) Sprite * crossButton;
+@property (nonatomic) CGRect playTable;
 
 @end
 
@@ -55,7 +58,7 @@
         [self.scene addSprite:self.fireButton];
         self.crossButton = [[Sprite alloc] initWithFrame:CGRectMake(buttonSize * .2 - 1,
                                                                    _bottomLine - buttonSize * 1.2,
-                                                                   buttonSize, buttonSize)
+                                                                   2 * buttonSize, 2 * buttonSize)
                                                andNames:@"cross_button", nil];
         [self.scene addSprite:self.crossButton];
         _fireBlasts = [[NSMutableArray alloc] init];
@@ -81,7 +84,7 @@
         }
         
     }
-    [self.spaceship moveTo:CGPointMake(sin(CACurrentMediaTime()) / 5 * 4 - .125, -1)];
+//    [self.spaceship moveTo:CGPointMake(sin(CACurrentMediaTime()) / 5 * 4 - .125, -1)];
     [self.scene render];
 }
 
@@ -125,20 +128,39 @@
     _shooter = nil;
 }
 
+-(CGRect)playTable
+{
+    CGRect table = self.scene.glFrame;
+    table.size.height -= _bottomLine - table.origin.y;
+    table.origin.y = _bottomLine;
+    return table;
+}
+
+-(void)moveShipBy:(CGVector)vector
+{
+    const float k = 0.3;
+    [self.spaceship moveBy:CGVectorMake(vector.dx * k, vector.dy * k) inRect:self.playTable];
+}
+
 -(void)touchesBeganAt:(CGPoint)point
 {
     if ([self.fireButton checkPoint:point])
         [self startFire];
+    else if ([self.crossButton checkPoint:point])
+        [self moveShipBy:[self.crossButton relativeDirection:point]];
 }
 
 -(void)touchesEndedAt:(CGPoint)point
 {
-    [self stopFire];
+    if ([self.fireButton checkPoint:point])
+        [self stopFire];
 }
 
 -(void)touchesMovedTo:(CGPoint)point
 {
-    if (![self.fireButton checkPoint:point])
+    if ([self.crossButton checkPoint:point])
+        [self moveShipBy:[self.crossButton relativeDirection:point]];
+    else if (![self.fireButton checkPoint:point])
         [self stopFire];
 }
 
