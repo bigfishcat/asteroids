@@ -7,17 +7,24 @@
 //
 
 #import "ViewController.h"
+#import "GLScene.h"
+#import "Director.h"
 
 @interface ViewController ()
+
+@property (nonatomic) Director *director;
 
 @end
 
 @implementation ViewController
 
+@synthesize director;
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+	[(GLScene*)self.view load];
+    self.director = [[Director alloc] initWithScene:(GLScene*)self.view];
 }
 
 - (void)didReceiveMemoryWarning

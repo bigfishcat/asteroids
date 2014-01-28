@@ -21,6 +21,17 @@
 		8D7306601896FA1C0033FCB6 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D7306421896FA1C0033FCB6 /* UIKit.framework */; };
 		8D7306681896FA1C0033FCB6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8D7306661896FA1C0033FCB6 /* InfoPlist.strings */; };
 		8D73066A1896FA1C0033FCB6 /* asteroidsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D7306691896FA1C0033FCB6 /* asteroidsTests.m */; };
+		8D7306741896FA300033FCB6 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D7306731896FA300033FCB6 /* OpenGLES.framework */; };
+		8D73067D1896FA980033FCB6 /* blast.png in Resources */ = {isa = PBXBuildFile; fileRef = 8D7306781896FA980033FCB6 /* blast.png */; };
+		8D73067E1896FA980033FCB6 /* fire_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 8D7306791896FA980033FCB6 /* fire_button.png */; };
+		8D73067F1896FA980033FCB6 /* fire_button_pressed.png in Resources */ = {isa = PBXBuildFile; fileRef = 8D73067A1896FA980033FCB6 /* fire_button_pressed.png */; };
+		8D7306801896FA980033FCB6 /* space-sky.png in Resources */ = {isa = PBXBuildFile; fileRef = 8D73067B1896FA980033FCB6 /* space-sky.png */; };
+		8D7306811896FA980033FCB6 /* spaceship.png in Resources */ = {isa = PBXBuildFile; fileRef = 8D73067C1896FA980033FCB6 /* spaceship.png */; };
+		8D73068A1896FAB60033FCB6 /* Director.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D7306831896FAB60033FCB6 /* Director.m */; };
+		8D73068B1896FAB60033FCB6 /* Fragment.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 8D7306841896FAB60033FCB6 /* Fragment.glsl */; };
+		8D73068C1896FAB60033FCB6 /* GLScene.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D7306861896FAB60033FCB6 /* GLScene.m */; };
+		8D73068D1896FAB60033FCB6 /* Sprite.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D7306881896FAB60033FCB6 /* Sprite.m */; };
+		8D73068E1896FAB60033FCB6 /* Vertex.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 8D7306891896FAB60033FCB6 /* Vertex.glsl */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +64,21 @@
 		8D7306651896FA1C0033FCB6 /* asteroidsTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "asteroidsTests-Info.plist"; sourceTree = "<group>"; };
 		8D7306671896FA1C0033FCB6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8D7306691896FA1C0033FCB6 /* asteroidsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = asteroidsTests.m; sourceTree = "<group>"; };
+		8D7306731896FA300033FCB6 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		8D7306751896FA370033FCB6 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		8D7306781896FA980033FCB6 /* blast.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blast.png; sourceTree = "<group>"; };
+		8D7306791896FA980033FCB6 /* fire_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fire_button.png; sourceTree = "<group>"; };
+		8D73067A1896FA980033FCB6 /* fire_button_pressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fire_button_pressed.png; sourceTree = "<group>"; };
+		8D73067B1896FA980033FCB6 /* space-sky.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "space-sky.png"; sourceTree = "<group>"; };
+		8D73067C1896FA980033FCB6 /* spaceship.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spaceship.png; sourceTree = "<group>"; };
+		8D7306821896FAB60033FCB6 /* Director.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Director.h; sourceTree = "<group>"; };
+		8D7306831896FAB60033FCB6 /* Director.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Director.m; sourceTree = "<group>"; };
+		8D7306841896FAB60033FCB6 /* Fragment.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Fragment.glsl; sourceTree = "<group>"; };
+		8D7306851896FAB60033FCB6 /* GLScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLScene.h; sourceTree = "<group>"; };
+		8D7306861896FAB60033FCB6 /* GLScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLScene.m; sourceTree = "<group>"; };
+		8D7306871896FAB60033FCB6 /* Sprite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sprite.h; sourceTree = "<group>"; };
+		8D7306881896FAB60033FCB6 /* Sprite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Sprite.m; sourceTree = "<group>"; };
+		8D7306891896FAB60033FCB6 /* Vertex.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Vertex.glsl; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +86,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8D7306741896FA300033FCB6 /* OpenGLES.framework in Frameworks */,
 				8D7306411896FA1C0033FCB6 /* CoreGraphics.framework in Frameworks */,
 				8D7306431896FA1C0033FCB6 /* UIKit.framework in Frameworks */,
 				8D73063F1896FA1C0033FCB6 /* Foundation.framework in Frameworks */,
@@ -101,6 +128,8 @@
 		8D73063D1896FA1C0033FCB6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8D7306751896FA370033FCB6 /* QuartzCore.framework */,
+				8D7306731896FA300033FCB6 /* OpenGLES.framework */,
 				8D73063E1896FA1C0033FCB6 /* Foundation.framework */,
 				8D7306401896FA1C0033FCB6 /* CoreGraphics.framework */,
 				8D7306421896FA1C0033FCB6 /* UIKit.framework */,
@@ -112,6 +141,15 @@
 		8D7306441896FA1C0033FCB6 /* asteroids */ = {
 			isa = PBXGroup;
 			children = (
+				8D7306821896FAB60033FCB6 /* Director.h */,
+				8D7306831896FAB60033FCB6 /* Director.m */,
+				8D7306851896FAB60033FCB6 /* GLScene.h */,
+				8D7306861896FAB60033FCB6 /* GLScene.m */,
+				8D7306871896FAB60033FCB6 /* Sprite.h */,
+				8D7306881896FAB60033FCB6 /* Sprite.m */,
+				8D7306841896FAB60033FCB6 /* Fragment.glsl */,
+				8D7306891896FAB60033FCB6 /* Vertex.glsl */,
+				8D7306771896FA980033FCB6 /* Resources */,
 				8D73064D1896FA1C0033FCB6 /* AppDelegate.h */,
 				8D73064E1896FA1C0033FCB6 /* AppDelegate.m */,
 				8D7306501896FA1C0033FCB6 /* Main.storyboard */,
@@ -150,6 +188,18 @@
 				8D7306661896FA1C0033FCB6 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		8D7306771896FA980033FCB6 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8D7306781896FA980033FCB6 /* blast.png */,
+				8D7306791896FA980033FCB6 /* fire_button.png */,
+				8D73067A1896FA980033FCB6 /* fire_button_pressed.png */,
+				8D73067B1896FA980033FCB6 /* space-sky.png */,
+				8D73067C1896FA980033FCB6 /* spaceship.png */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -228,9 +278,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8D7306811896FA980033FCB6 /* spaceship.png in Resources */,
 				8D7306571896FA1C0033FCB6 /* Images.xcassets in Resources */,
 				8D7306491896FA1C0033FCB6 /* InfoPlist.strings in Resources */,
+				8D73067F1896FA980033FCB6 /* fire_button_pressed.png in Resources */,
+				8D73067E1896FA980033FCB6 /* fire_button.png in Resources */,
+				8D7306801896FA980033FCB6 /* space-sky.png in Resources */,
+				8D73067D1896FA980033FCB6 /* blast.png in Resources */,
 				8D7306521896FA1C0033FCB6 /* Main.storyboard in Resources */,
+				8D73068B1896FAB60033FCB6 /* Fragment.glsl in Resources */,
+				8D73068E1896FAB60033FCB6 /* Vertex.glsl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -250,6 +307,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D7306551896FA1C0033FCB6 /* ViewController.m in Sources */,
+				8D73068A1896FAB60033FCB6 /* Director.m in Sources */,
+				8D73068D1896FAB60033FCB6 /* Sprite.m in Sources */,
+				8D73068C1896FAB60033FCB6 /* GLScene.m in Sources */,
 				8D73064F1896FA1C0033FCB6 /* AppDelegate.m in Sources */,
 				8D73064B1896FA1C0033FCB6 /* main.m in Sources */,
 			);
