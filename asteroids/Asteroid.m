@@ -22,6 +22,7 @@
     GLuint _texture;
     GLuint _vertexBuffer;
     GLuint _indexBuffer;
+    NSTimer * _mover;
 }
 
 @property (readwrite) NSInteger toughness;
@@ -31,13 +32,17 @@
 @implementation Asteroid
 
 @synthesize toughness;
+@synthesize velocity = _velocity;
 
--(id)initWithPosition:(CGPoint)position
+#define DT 0.05
+
+-(id)initWithPosition:(CGPoint)position andVelocity:(CGVector)velocity
 {
     if (self = [super init])
     {
         self.toughness = 2;
-        const CGFloat a = .5;
+        self.velocity = velocity;
+        const CGFloat a = (arc4random() % 25  + 25) / 100.;
         CGRect area = CGRectMake(position.x, position.y, a, a);
         int pointCount = arc4random() % (MAX_POINTS_COUNT - MIN_POINTS_COUNT) +
             MIN_POINTS_COUNT;
@@ -48,13 +53,31 @@
         
         [self setupVBOs];
         _texture = [self loadTexture:@"stone"];
+        
+        _mover = [NSTimer scheduledTimerWithTimeInterval:DT
+                                                  target:self
+                                                selector:@selector(move:)
+                                                userInfo:nil
+                                                 repeats:YES];
     }
     return self;
 }
 
+-(void)move:(NSTimer*)sender
+{
+    [self moveBy:CGVectorMake(self.velocity.dx / DT, self.velocity.dy / DT)];
+}
+
+-(void)onRemoveFromScene
+{
+    [super onRemoveFromScene];
+    [_mover invalidate];
+    _mover = nil;
+}
+
 -(CGPoint)getRandomPointInRect:(CGRect)rect
 {
-    const int precision = MAX_POINTS_COUNT * 2;
+    const int precision = MAX_POINTS_COUNT * 4;
     int x = arc4random() % (int)(rect.size.width * precision) +
         (int)(rect.origin.x * precision);
     int y = arc4random() % (int)(rect.size.height * precision) +

@@ -92,7 +92,12 @@
 
 -(void)createAsteroid
 {
-    Asteroid * asteroid = [[Asteroid alloc] initWithPosition:CGPointMake(0, 0)];
+    CGRect r = self.scene.glFrame;
+    CGPoint initPoint = CGPointMake(arc4random() % 200 / 100. - 1., r.origin.y + r.size.height);
+    CGVector initVelocity = CGVectorMake(arc4random() % 20 / 1000. - .01, arc4random() % 20 / 1000. - .03);
+    Asteroid * asteroid = [[Asteroid alloc]
+                           initWithPosition:initPoint
+                                andVelocity:initVelocity];
     [self.scene addObject:asteroid];
 }
 
