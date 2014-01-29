@@ -17,12 +17,6 @@ typedef struct
     GLfloat TexCoord[2];
 } Vertex;
 
-typedef struct {
-    CGFloat x;
-    CGFloat y;
-    CGFloat z;
-} GLPoint;
-
 @interface GLObject : NSObject
 {
     @protected
@@ -30,7 +24,7 @@ typedef struct {
     GLuint _vertexBuffer;
     GLuint _indexBuffer;
     CGVector _movement;
-    GLPoint _position;
+    CGPoint _position;
 }
 
 -(void)drawWithAttrib:(VertexAttrib*)vertexAttrib andFrameSize:(CGSize)frameSize;
@@ -43,5 +37,12 @@ typedef struct {
 -(void)moveTo:(CGPoint)point;
 
 -(void)moveBy:(CGVector)vector;
+
+-(void)onRemoveFromScene;
+
++(void)resetOrder;
+
+@property (readonly) GLint zOrder;
+@property (readonly, nonatomic) GLfloat scaleFactor;
 
 @end

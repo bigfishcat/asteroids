@@ -42,7 +42,7 @@
 
 -(void)load
 {
-    [Sprite reinitSprites];
+    [GLObject resetOrder];
     [self setupLayer];
     [self setupContext];
     [self setupRenderBuffer];
@@ -69,7 +69,7 @@
 -(void)removeObject:(GLObject*)sprite
 {
     [self.sprites removeObject:sprite];
-    
+    [sprite onRemoveFromScene];
 }
 
 -(void)setupParams

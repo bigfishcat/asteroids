@@ -21,16 +21,9 @@
 
 @end
 
-static int zOrder = -MAX_SPRITE_COUNT;
-
 @implementation Sprite
 
 @synthesize spriteFrames;
-
-+(void)reinitSprites
-{
-    zOrder = -MAX_SPRITE_COUNT;
-}
 
 -(id)initWithFrame:(CGRect)frame
 {
@@ -79,11 +72,10 @@ static int zOrder = -MAX_SPRITE_COUNT;
     int yi = 0;
     _position.x = xs[0];
     _position.y = ys[0];
-    _position.z = ++zOrder;
     _size = frame.size;
     for (int i = 0; i < VERTICES_COUNT; i++)
     {
-        Vertex v = {{xs[xi] * (1 - _position.z), ys[yi] * (1 - _position.z), _position.z}, {xi, yi}};
+        Vertex v = {{xs[xi] / self.scaleFactor, ys[yi] / self.scaleFactor, self.zOrder}, {xi, yi}};
         _vertices[i] = v;
         _indices[i] = i;
         if (++xi >= VERTICES_COUNT / 2)
@@ -160,8 +152,8 @@ const GLubyte Indices[] = {
 
 -(CGRect)frame
 {
-    return CGRectMake(_position.x + _movement.dx / (-_position.z),
-                      _position.y + _movement.dy / (-_position.z),
+    return CGRectMake(_position.x + _movement.dx * self.scaleFactor,
+                      _position.y + _movement.dy * self.scaleFactor,
                       _size.width, _size.height);
 }
 
@@ -172,8 +164,8 @@ const GLubyte Indices[] = {
 
 -(CGVector)relativeDirection:(CGPoint)point
 {
-    CGFloat x = _position.x + _movement.dx / (-_position.z) + _size.width / 2;
-    CGFloat y = _position.y + _movement.dy / (-_position.z) + _size.height / 2;
+    CGFloat x = _position.x + _movement.dx * self.scaleFactor + _size.width / 2;
+    CGFloat y = _position.y + _movement.dy * self.scaleFactor + _size.height / 2;
     return CGVectorMake(point.x - x, point.y - y);
 }
 

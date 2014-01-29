@@ -118,15 +118,15 @@
         }
     }
     
-    _rootsCount = rootIndexes.count;
+    _rootsCount = (GLint)rootIndexes.count;
     for (int i = 0; i < rootIndexes.count; i++)
     {
         NSInteger rootIndex = [[rootIndexes objectAtIndex:i] integerValue];
         CGPoint point = points[rootIndex];
         
-        _roots[i].Position[0] = point.x;
-        _roots[i].Position[1] = point.y;
-        _roots[i].Position[2] = -1;
+        _roots[i].Position[0] = point.x / self.scaleFactor;
+        _roots[i].Position[1] = point.y / self.scaleFactor;
+        _roots[i].Position[2] = self.zOrder;
         _roots[i].TexCoord[0] = arc4random() % 100 / 100.;
         _roots[i].TexCoord[1] = arc4random() % 100 / 100.;
     }

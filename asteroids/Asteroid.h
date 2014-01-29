@@ -14,5 +14,6 @@
 -(id)initWithPosition:(CGPoint)position;
 
 @property (readonly) NSInteger toughness;
+@property CGVector speed;
 
 @end

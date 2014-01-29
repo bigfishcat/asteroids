@@ -8,7 +8,62 @@
 
 #import "GLObject.h"
 
+typedef struct {
+    GLint buffer[MAX_SPRITE_COUNT];
+    size_t count;
+    size_t position;
+} ZOrderStack;
+
+void initZOrderStack(ZOrderStack * stack)
+{
+    stack->buffer[0] = 1 - MAX_SPRITE_COUNT;
+    for (int i = 1; i < MAX_SPRITE_COUNT - 1; i++)
+        stack->buffer[i] = - i;
+    stack->count = MAX_SPRITE_COUNT - 1;
+    stack->position = 0;
+}
+
+Boolean pushZOrderStack(ZOrderStack * stack, GLint value)
+{
+    if (stack == NULL || stack->count == MAX_SPRITE_COUNT)
+        return NO;
+    
+    stack->buffer[--stack->position] = value;
+    stack->count++;
+    return YES;
+}
+
+GLint popZOrderStack(ZOrderStack * stack)
+{
+    if (stack == NULL || stack->count == 0)
+        return 0;
+    stack->count--;
+    return stack->buffer[stack->position++];
+}
+
+@interface GLObject()
+@property (readwrite) GLint zOrder;
+@end
+
 @implementation GLObject
+
+@synthesize zOrder;
+
+ZOrderStack zOrderSet;
+
++(void)resetOrder
+{
+    initZOrderStack(&zOrderSet);
+}
+
+-(id)init
+{
+    if (self = [super init])
+    {
+        self.zOrder = popZOrderStack(&zOrderSet);
+    }
+    return self;
+}
 
 -(void) applyTranslationWithX:(GLfloat)x andY:(GLfloat)y andZ:(GLfloat)z
                  andModelView:(GLuint)modelViewUniform
@@ -57,19 +112,30 @@
 
 -(void)moveTo:(CGPoint)point
 {
-    _movement.dx = (point.x - _position.x) * (-_position.z);
-    _movement.dy = (point.y - _position.y) * (-_position.z);
+    _movement.dx = (point.x - _position.x) / self.scaleFactor;
+    _movement.dy = (point.y - _position.y) / self.scaleFactor;
 }
 
 -(void)moveBy:(CGVector)vector
 {
-    _movement.dx += vector.dx * (-_position.z);
-    _movement.dy += vector.dy * (-_position.z);
+    _movement.dx += vector.dx / self.scaleFactor;
+    _movement.dy += vector.dy / self.scaleFactor;
+}
+
+-(void)onRemoveFromScene
+{
+    pushZOrderStack(&zOrderSet, self.zOrder);
 }
 
 -(void) drawWithAttrib:(VertexAttrib*)vertexAttrib andFrameSize:(CGSize)frameSize
 {
-    
+    [NSException raise:NSInternalInconsistencyException
+                format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
+}
+
+-(GLfloat)scaleFactor
+{
+    return 1. / (1 - self.zOrder);
 }
 
 @end

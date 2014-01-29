@@ -11,8 +11,6 @@
 
 @interface Sprite : GLObject
 
-+(void)reinitSprites;
-
 -(id)initWithName:(NSString*)name andFrame:(CGRect)frame;
 -(id)initWithFrame:(CGRect)frame andNames:(NSString*)name1, ... NS_REQUIRES_NIL_TERMINATION;
 -(void)moveBy:(CGVector)vector inRect:(CGRect)bound;
