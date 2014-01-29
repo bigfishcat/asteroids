@@ -13,8 +13,9 @@
 @interface Director()
 {
     NSTimer * _shooter;
-    NSTimer * _mover;
+    NSTimer * _asteroidLauncher;
     CGVector _movement;
+    NSMutableArray * _asteroids;
     NSMutableArray * _fireBlasts;
     NSMutableSet * _amunition;
     GLfloat _bottomLine;
@@ -38,20 +39,11 @@
 {
     if (self = [super init])
     {
-        _shooter = [NSTimer timerWithTimeInterval:.3
-                                               target:self
-                                             selector:@selector(fire:)
-                                             userInfo:nil
-                                              repeats:YES];
         self.scene = glScene;
         self.scene.touchDelegate = self;
         GLfloat buttonSize = .25;
         CGSize shipSize = CGSizeMake(.25, .5);
         _bottomLine = glScene.glFrame.origin.y + buttonSize * 1.4;
-        self.spaceship = [[Sprite alloc] initWithName:@"spaceship"
-                                             andFrame:CGRectMake(-shipSize.width/2, _bottomLine,
-                                                                 shipSize.width, shipSize.height)];
-        [self.scene addObject:self.spaceship];
         self.fireButton = [[Sprite alloc] initWithFrame:CGRectMake(1 - buttonSize * 1.2,
                                                                    _bottomLine - buttonSize * 1.2,
                                                                    buttonSize, buttonSize)
@@ -62,6 +54,13 @@
                                                                    _bottomLine - buttonSize * 1.2,
                                                                    2 * buttonSize, 2 * buttonSize)];
         [self.scene addObject:self.crossButton];
+        
+        self.spaceship = [[Sprite alloc] initWithName:@"spaceship"
+                                             andFrame:CGRectMake(-shipSize.width/2, _bottomLine,
+                                                                 shipSize.width, shipSize.height)];
+        [self.scene addObject:self.spaceship];
+        
+        _asteroids = [[NSMutableArray alloc] init];
         _fireBlasts = [[NSMutableArray alloc] init];
         _amunition = [[NSMutableSet alloc] init];
         
@@ -69,7 +68,11 @@
                                                                  selector:@selector(render:)];
         [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         
-        [self createAsteroid];
+        _asteroidLauncher = [NSTimer scheduledTimerWithTimeInterval:1.5
+                                                             target:self
+                                                           selector:@selector(createAsteroid:)
+                                                           userInfo:nil
+                                                            repeats:YES];
     }
     return self;
 }
@@ -86,19 +89,28 @@
             [_fireBlasts removeObject:blast];
         }
         
+        for (Asteroid * asteroid in [_asteroids copy])
+        {
+            if (![asteroid isInHollow:self.scene.glFrame])
+            {
+                [self.scene removeObject:asteroid];
+                [_asteroids removeObject:asteroid];
+            }
+        }
     }
     [self.scene render];
 }
 
--(void)createAsteroid
+-(void)createAsteroid:(NSTimer*)sender
 {
     CGRect r = self.scene.glFrame;
     CGPoint initPoint = CGPointMake(arc4random() % 200 / 100. - 1., r.origin.y + r.size.height);
-    CGVector initVelocity = CGVectorMake(arc4random() % 20 / 1000. - .01, arc4random() % 20 / 1000. - .03);
+    CGVector initVelocity = CGVectorMake(arc4random() % 20 / 10000. - .001, arc4random() % 20 / 10000. - .003);
     Asteroid * asteroid = [[Asteroid alloc]
                            initWithPosition:initPoint
                                 andVelocity:initVelocity];
     [self.scene addObject:asteroid];
+    [_asteroids addObject:asteroid];
 }
 
 -(void)fire:(NSTimer*)sender

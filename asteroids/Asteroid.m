@@ -192,4 +192,13 @@
     glDrawElements(GL_TRIANGLE_FAN, _rootsCount, GL_UNSIGNED_BYTE, 0);
 }
 
+-(Boolean)isInHollow:(CGRect)hollow
+{
+    GLfloat x = _position.x + _movement.dx * self.scaleFactor;
+    GLfloat y = _position.y + _movement.dy * self.scaleFactor;
+    return y > hollow.origin.y &&
+           x > hollow.origin.x &&
+           x < (hollow.origin.x + hollow.size.width);
+}
+
 @end

@@ -12,6 +12,7 @@
 @interface Asteroid : GLObject
 
 -(id)initWithPosition:(CGPoint)position andVelocity:(CGVector)velocity;
+-(Boolean)isInHollow:(CGRect)hollow;
 
 @property (readonly) NSInteger toughness;
 @property CGVector velocity;
