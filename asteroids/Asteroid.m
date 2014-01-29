@@ -52,9 +52,6 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
     GLubyte _indices[MIN_POINTS_COUNT];
     GLint _rootsCount;
     
-    GLuint _texture;
-    GLuint _vertexBuffer;
-    GLuint _indexBuffer;
     NSTimer * _mover;
 }
 
@@ -69,24 +66,27 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
 
 #define DT 0.05
 
--(id)initWithPosition:(CGPoint)position andVelocity:(CGVector)velocity
+-(id)initWithPosition:(CGPoint)position andVelocity:(CGVector)velocity andToughness:(NSInteger)t
 {
     if (self = [super init])
     {
-        self.toughness = 2;
+        self.toughness = t;
         self.velocity = velocity;
-        const CGFloat a = (arc4random() % 25  + 25) / 100.;
+        const CGFloat a = (arc4random() % 25  + 25) / 400. * t;
         _position = position;
         CGRect area = CGRectMake(position.x, position.y, a, a);
         int pointCount = arc4random() % (MAX_POINTS_COUNT - MIN_POINTS_COUNT) +
-            MIN_POINTS_COUNT;
+        MIN_POINTS_COUNT;
         CGPoint points[MAX_POINTS_COUNT] = {0};
         for (int i = 0; i < pointCount; i++)
-            points[i] = [self getRandomPointInRect:area];
+        points[i] = [self getRandomPointInRect:area];
         [self jarvismarchForArray:points withSize:pointCount];
         
         [self setupVBOs];
-        _texture = [self loadTexture:@"stone"];
+        static GLuint texture = 0;
+        if (texture == 0)
+            texture = [self loadTexture:@"stone"];
+        _texture = texture;
         
         _mover = [NSTimer scheduledTimerWithTimeInterval:DT
                                                   target:self
@@ -95,6 +95,11 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
                                                  repeats:YES];
     }
     return self;
+}
+
+-(id)initWithPosition:(CGPoint)position andVelocity:(CGVector)velocity
+{
+    return [self initWithPosition:position andVelocity:velocity andToughness:4];
 }
 
 -(void)move:(NSTimer*)sender
@@ -318,6 +323,26 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
     
     self.velocity = CGVectorMake((vs.dx + vr.dx) / 2, (vs.dy + vr.dy) / 2);
     asteroid.velocity = CGVectorMake((vs.dx - vr.dx) / 2, (vs.dy - vr.dy) / 2);
+}
+
+-(NSArray*)produceChilds
+{
+    int count = arc4random() % (_rootsCount - 2) + 2;
+    NSMutableArray * childs = [[NSMutableArray alloc] initWithCapacity:count];
+    CGFloat dx = self.velocity.dx;
+    for (int i = 0; i < count; i ++)
+    {
+        CGFloat vx = i == count - 1 ? dx : arc4random() % (100 * count) / 100. * dx;
+        dx = dx - vx;
+        Asteroid * child = [[Asteroid alloc] initWithPosition:[self currentPositionWithVertex:_roots[i]]
+                                                  andVelocity:CGVectorMake(vx, self.velocity.dy)
+                                                 andToughness:1];
+        if (childs.count > 0)
+            [child repelAsteroid:childs.lastObject];
+        [childs addObject:child];
+    }
+    
+    return [NSArray arrayWithArray:childs];
 }
 
 @end

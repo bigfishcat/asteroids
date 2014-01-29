@@ -18,6 +18,7 @@
 -(Boolean)intersectAsteroid:(Asteroid*)asteroid;
 -(Boolean)intersectSprite:(Sprite*)sprite;
 -(void)repelAsteroid:(Asteroid*)asteroid;
+-(NSArray*)produceChilds;
 
 @property (readonly) NSInteger toughness;
 @property CGVector velocity;

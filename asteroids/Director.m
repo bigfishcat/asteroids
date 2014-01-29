@@ -68,7 +68,7 @@
                                                                  selector:@selector(render:)];
         [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         
-        _asteroidLauncher = [NSTimer scheduledTimerWithTimeInterval:1.5
+        _asteroidLauncher = [NSTimer scheduledTimerWithTimeInterval:1.1
                                                              target:self
                                                            selector:@selector(createAsteroid:)
                                                            userInfo:nil
@@ -90,7 +90,7 @@
     [_fireBlasts removeObject:blast];
 }
 
-- (void)render:(CADisplayLink*)displayLink
+-(void)processObjects
 {
     for (Asteroid * asteroid in [_asteroids copy])
     {
@@ -103,7 +103,7 @@
         {
             if(asteroid != asteroid2 &&
                [asteroid intersectAsteroid:asteroid2])
-                [asteroid repelAsteroid:asteroid2];
+            [asteroid repelAsteroid:asteroid2];
         }
     }
     
@@ -116,6 +116,15 @@
             if ([asteroid intersectSprite:blast])
             {
                 [self removeBlast:blast];
+                if (asteroid.toughness > 1)
+                {
+                    NSArray * childs = [asteroid produceChilds];
+                    for (Asteroid * child in childs)
+                    {
+                        [self.scene addObject:child];
+                        [_asteroids addObject:child];
+                    }
+                }
                 [self removeAsteroid:asteroid];
             }
         }
@@ -125,6 +134,11 @@
             [self removeBlast:blast];
         }
     }
+}
+
+-(void)render:(CADisplayLink*)displayLink
+{
+    [self processObjects];
     [self.scene render];
 }
 
