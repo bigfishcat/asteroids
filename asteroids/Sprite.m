@@ -103,7 +103,7 @@ const GLubyte Indices[] = {
 }
 
 -(void) drawWithAttrib:(VertexAttrib*)vertexAttrib andFrameSize:(CGSize)frameSize
-{
+{    
     [self applyTranslationWithX:_movement.dx
                            andY:_movement.dy
                            andZ:0

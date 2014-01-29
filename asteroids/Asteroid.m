@@ -9,9 +9,42 @@
 #import "Asteroid.h"
 #import "Sprite.h"
 #import <stdlib.h>
+#import <math.h>
 
 #define MIN_POINTS_COUNT 16
 #define MAX_POINTS_COUNT 32
+
+Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, CGPoint *out_intersection)
+{
+    CGVector dir1 = CGVectorMake(end1.x - start1.x, end1.y - start1.y);
+    CGVector dir2 = CGVectorMake(end2.x - start2.x, end2.y - start2.y);
+    
+    CGFloat a1 = -dir1.dy;
+    CGFloat b1 = dir1.dx;
+    CGFloat d1 = -(a1*start1.x + b1*start1.y);
+    
+    CGFloat a2 = -dir2.dy;
+    CGFloat b2 = dir2.dx;
+    CGFloat d2 = -(a2*start2.x + b2*start2.y);
+    
+    CGFloat seg1_line2_start = a2*start1.x + b2*start1.y + d2;
+    CGFloat seg1_line2_end = a2*end1.x + b2*end1.y + d2;
+    
+    CGFloat seg2_line1_start = a1*start2.x + b1*start2.y + d1;
+    CGFloat seg2_line1_end = a1*end2.x + b1*end2.y + d1;
+    
+    if (seg1_line2_start * seg1_line2_end >= 0 ||
+        seg2_line1_start * seg2_line1_end >= 0)
+        return NO;
+    
+    CGFloat u = seg1_line2_start / (seg1_line2_start - seg1_line2_end);
+    if (out_intersection)
+        *out_intersection = CGPointMake(start1.x + u * dir1.dx,
+                                        start1.y + u * dir1.dy);
+    
+    return YES;
+}
+
 
 @interface Asteroid()
 {
@@ -43,6 +76,7 @@
         self.toughness = 2;
         self.velocity = velocity;
         const CGFloat a = (arc4random() % 25  + 25) / 100.;
+        _position = position;
         CGRect area = CGRectMake(position.x, position.y, a, a);
         int pointCount = arc4random() % (MAX_POINTS_COUNT - MIN_POINTS_COUNT) +
             MIN_POINTS_COUNT;
@@ -73,6 +107,13 @@
     [super onRemoveFromScene];
     [_mover invalidate];
     _mover = nil;
+    if (_vertexBuffer && _indexBuffer)
+    {
+        GLuint buffers[] = {_vertexBuffer, _indexBuffer};
+        glDeleteBuffers(2, buffers);
+        _vertexBuffer = 0;
+        _indexBuffer = 0;
+    }
 }
 
 -(CGPoint)getRandomPointInRect:(CGRect)rect
@@ -172,6 +213,9 @@
 
 -(void) drawWithAttrib:(VertexAttrib*)vertexAttrib andFrameSize:(CGSize)frameSize
 {
+    if (_vertexBuffer == 0 || _indexBuffer == 0)
+        return;
+    
     [self applyTranslationWithX:_movement.dx
                            andY:_movement.dy
                            andZ:0
@@ -192,13 +236,88 @@
     glDrawElements(GL_TRIANGLE_FAN, _rootsCount, GL_UNSIGNED_BYTE, 0);
 }
 
+-(CGPoint)currentPosition:(CGPoint)point
+{
+    return CGPointMake((point.x + _movement.dx) * self.scaleFactor,
+                       (point.y + _movement.dy) * self.scaleFactor);
+}
+
+-(CGPoint)currentPositionWithVertex:(Vertex)vertex
+{
+    return [self currentPosition:CGPointMake(vertex.Position[0],
+                                             vertex.Position[1])];
+}
+
 -(Boolean)isInHollow:(CGRect)hollow
 {
-    GLfloat x = _position.x + _movement.dx * self.scaleFactor;
     GLfloat y = _position.y + _movement.dy * self.scaleFactor;
-    return y > hollow.origin.y &&
-           x > hollow.origin.x &&
-           x < (hollow.origin.x + hollow.size.width);
+    if (y + 0.001 > hollow.origin.y + hollow.size.height)
+        return true;
+    
+    for (int i = 0; i < _rootsCount; i++)
+    {
+        CGPoint root = [self currentPositionWithVertex:_roots[i]];
+        if (CGRectContainsPoint(hollow, root))
+            return true;
+    }
+    
+    return false;
+}
+
+-(Boolean)intersectAsteroid:(Asteroid*)asteroid
+{
+    for (int i = 0; i < _rootsCount; i++)
+    {
+        int m = i == 0 ? _rootsCount - 1 : i - 1;
+        CGPoint a = [self currentPositionWithVertex:_roots[m]];
+        CGPoint b = [self currentPositionWithVertex:_roots[i]];
+        for (int k = 0; k < asteroid->_rootsCount; k++)
+        {
+            int n = k == 0 ? _rootsCount - 1 : k - 1;
+            CGPoint c = [asteroid currentPositionWithVertex:asteroid->_roots[n]];
+            CGPoint d = [asteroid currentPositionWithVertex:asteroid->_roots[k]];
+            if (isIntersect(a, b, c, d, nil))
+                return YES;
+        }
+    }
+    return NO;
+}
+
+-(Boolean)intersectSprite:(Sprite*)sprite
+{
+    CGRect frame = sprite.frame;
+    CGPoint rect[] = {
+        CGPointMake(frame.origin.x, frame.origin.y),
+        CGPointMake(frame.origin.x + frame.size.width, frame.origin.y),
+        CGPointMake(frame.origin.x, frame.origin.y + frame.size.height),
+        CGPointMake(frame.origin.x + frame.size.width, frame.origin.y + frame.size.height)
+    };
+    
+    for (int i = 0; i < _rootsCount; i++)
+    {
+        int m = i == 0 ? _rootsCount - 1 : i - 1;
+        CGPoint a = [self currentPositionWithVertex:_roots[m]];
+        CGPoint b = [self currentPositionWithVertex:_roots[i]];
+        for (int k = 0; k < 4; k++)
+        {
+            int n = k == 0 ? _rootsCount - 1 : k - 1;
+            if (isIntersect(a, b, rect[n], rect[k], nil))
+                return YES;
+        }
+    }
+    
+    return NO;
+}
+
+-(void)repelAsteroid:(Asteroid *)asteroid
+{
+    CGVector vr = CGVectorMake(self.velocity.dx - asteroid.velocity.dx,
+                               self.velocity.dy - asteroid.velocity.dy);
+    CGVector vs = CGVectorMake(self.velocity.dx + asteroid.velocity.dx,
+                               self.velocity.dy + asteroid.velocity.dy);
+    
+    self.velocity = CGVectorMake((vs.dx + vr.dx) / 2, (vs.dy + vr.dy) / 2);
+    asteroid.velocity = CGVectorMake((vs.dx - vr.dx) / 2, (vs.dy - vr.dy) / 2);
 }
 
 @end

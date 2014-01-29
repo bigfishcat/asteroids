@@ -9,10 +9,15 @@
 #import <Foundation/Foundation.h>
 #import "GLObject.h"
 
+@class Sprite;
+
 @interface Asteroid : GLObject
 
 -(id)initWithPosition:(CGPoint)position andVelocity:(CGVector)velocity;
 -(Boolean)isInHollow:(CGRect)hollow;
+-(Boolean)intersectAsteroid:(Asteroid*)asteroid;
+-(Boolean)intersectSprite:(Sprite*)sprite;
+-(void)repelAsteroid:(Asteroid*)asteroid;
 
 @property (readonly) NSInteger toughness;
 @property CGVector velocity;

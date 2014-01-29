@@ -77,25 +77,52 @@
     return self;
 }
 
+-(void)removeAsteroid:(Asteroid*)asteroid
+{
+    [self.scene removeObject:asteroid];
+    [_asteroids removeObject:asteroid];
+}
+
+-(void)removeBlast:(Sprite*)blast
+{
+    [self.scene removeObject:blast];
+    [_amunition addObject:blast];
+    [_fireBlasts removeObject:blast];
+}
+
 - (void)render:(CADisplayLink*)displayLink
 {
+    for (Asteroid * asteroid in [_asteroids copy])
+    {
+        if (![asteroid isInHollow:self.scene.glFrame])
+        {
+            [self removeAsteroid:asteroid];
+        }
+        
+        for (Asteroid * asteroid2 in _asteroids)
+        {
+            if(asteroid != asteroid2 &&
+               [asteroid intersectAsteroid:asteroid2])
+                [asteroid repelAsteroid:asteroid2];
+        }
+    }
+    
     for (Sprite * blast in [_fireBlasts copy])
     {
         [blast moveBy:CGVectorMake(0, 0.05)];
-        if (![blast isInRect:self.scene.glFrame])
-        {
-            [self.scene removeObject:blast];
-            [_amunition addObject:blast];
-            [_fireBlasts removeObject:blast];
-        }
         
         for (Asteroid * asteroid in [_asteroids copy])
         {
-            if (![asteroid isInHollow:self.scene.glFrame])
+            if ([asteroid intersectSprite:blast])
             {
-                [self.scene removeObject:asteroid];
-                [_asteroids removeObject:asteroid];
+                [self removeBlast:blast];
+                [self removeAsteroid:asteroid];
             }
+        }
+        
+        if (![blast isInRect:self.scene.glFrame])
+        {
+            [self removeBlast:blast];
         }
     }
     [self.scene render];
