@@ -126,6 +126,7 @@
                     }
                 }
                 [self removeAsteroid:asteroid];
+                break;
             }
         }
         
@@ -211,9 +212,14 @@
 -(void)touchesBeganAt:(CGPoint)point
 {
     if ([self.fireButton checkPoint:point])
+    {
         [self startFire];
+        [self fire:nil];
+    }
     else if ([self.crossButton checkPoint:point])
+    {
         [self moveShipBy:[self.crossButton relativeDirection:point]];
+    }
 }
 
 -(void)touchesEndedAt:(CGPoint)point
