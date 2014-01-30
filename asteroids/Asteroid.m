@@ -14,23 +14,6 @@
 #define MIN_POINTS_COUNT 16
 #define MAX_POINTS_COUNT 32
 
-bool isIntersectBB(CGFloat a, CGFloat b, CGFloat c, CGFloat d)
-{
-	if (a > b)
-    {
-        a += b;
-        b -= a;
-        a -= b;
-    }
-	if (c > d)
-    {
-        c += d;
-        d -= c;
-        c -= d;
-    }
-	return fmaxf(a,c) <= fminf(b,d);
-}
-
 Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, CGPoint *out_intersection)
 {
     CGVector dir1 = CGVectorMake(end1.x - start1.x, end1.y - start1.y);
