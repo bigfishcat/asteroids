@@ -68,7 +68,7 @@
                                                                  selector:@selector(render:)];
         [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         
-        _asteroidLauncher = [NSTimer scheduledTimerWithTimeInterval:1.1
+        _asteroidLauncher = [NSTimer scheduledTimerWithTimeInterval:0.3
                                                              target:self
                                                            selector:@selector(createAsteroid:)
                                                            userInfo:nil
@@ -92,19 +92,23 @@
 
 -(void)processObjects
 {
-    for (Asteroid * asteroid in [_asteroids copy])
+    for (int i = 0; i < _asteroids.count; i++)
     {
+        Asteroid * asteroid = [_asteroids objectAtIndex:i];
         if (![asteroid isInHollow:self.scene.glFrame])
         {
             [self removeAsteroid:asteroid];
         }
-        
-        for (Asteroid * asteroid2 in _asteroids)
+        else
         {
-            if(asteroid != asteroid2 &&
-               [asteroid intersectAsteroid:asteroid2])
-            [asteroid repelAsteroid:asteroid2];
+            for (int k = i + 1; k < _asteroids.count; k++)
+            {
+                Asteroid * asteroid2 = [_asteroids objectAtIndex:k];
+                if([asteroid intersectAsteroid:asteroid2])
+                    [asteroid repelAsteroid:asteroid2];
+            }
         }
+
     }
     
     for (Sprite * blast in [_fireBlasts copy])
@@ -147,7 +151,7 @@
 {
     CGRect r = self.scene.glFrame;
     CGPoint initPoint = CGPointMake(arc4random() % 200 / 100. - 1., r.origin.y + r.size.height);
-    CGVector initVelocity = CGVectorMake(arc4random() % 20 / 10000. - .001, arc4random() % 20 / 10000. - .003);
+    CGVector initVelocity = CGVectorMake(arc4random() % 20 / 30000. - .0003, arc4random() % 20 / 30000. - .001);
     Asteroid * asteroid = [[Asteroid alloc]
                            initWithPosition:initPoint
                                 andVelocity:initVelocity];

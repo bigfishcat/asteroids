@@ -45,14 +45,13 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
     return YES;
 }
 
-
 @interface Asteroid()
 {
     Vertex _roots[MIN_POINTS_COUNT];
     GLubyte _indices[MIN_POINTS_COUNT];
     GLint _rootsCount;
-    
-    NSTimer * _mover;
+    GLfloat _mass;
+    CGPoint _center;
 }
 
 @property (readwrite) NSInteger toughness;
@@ -64,7 +63,7 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
 @synthesize toughness;
 @synthesize velocity = _velocity;
 
-#define DT 0.05
+#define DT (1./60)
 
 -(id)initWithPosition:(CGPoint)position andVelocity:(CGVector)velocity andToughness:(NSInteger)t
 {
@@ -73,6 +72,7 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
         self.toughness = t;
         self.velocity = velocity;
         const CGFloat a = (arc4random() % 25  + 25) / 400. * t;
+        _mass = a * a;
         _position = position;
         CGRect area = CGRectMake(position.x, position.y, a, a);
         int pointCount = arc4random() % (MAX_POINTS_COUNT - MIN_POINTS_COUNT) +
@@ -87,12 +87,6 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
         if (texture == 0)
             texture = [self loadTexture:@"stone"];
         _texture = texture;
-        
-        _mover = [NSTimer scheduledTimerWithTimeInterval:DT
-                                                  target:self
-                                                selector:@selector(move:)
-                                                userInfo:nil
-                                                 repeats:YES];
     }
     return self;
 }
@@ -102,7 +96,7 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
     return [self initWithPosition:position andVelocity:velocity andToughness:4];
 }
 
--(void)move:(NSTimer*)sender
+-(void)move
 {
     [self moveBy:CGVectorMake(self.velocity.dx / DT, self.velocity.dy / DT)];
 }
@@ -110,8 +104,6 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
 -(void)onRemoveFromScene
 {
     [super onRemoveFromScene];
-    [_mover invalidate];
-    _mover = nil;
     if (_vertexBuffer && _indexBuffer)
     {
         GLuint buffers[] = {_vertexBuffer, _indexBuffer};
@@ -188,6 +180,7 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
     }
     
     _rootsCount = (GLint)rootIndexes.count;
+    _center = CGPointMake(0, 0);
     for (int i = 0; i < rootIndexes.count; i++)
     {
         NSInteger rootIndex = [[rootIndexes objectAtIndex:i] integerValue];
@@ -198,7 +191,11 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
         _roots[i].Position[2] = self.zOrder;
         _roots[i].TexCoord[0] = arc4random() % 100 / 100.;
         _roots[i].TexCoord[1] = arc4random() % 100 / 100.;
+        _center.x += _roots[i].Position[0];
+        _center.y += _roots[i].Position[1];
     }
+    _center.x /= _rootsCount;
+    _center.y /= _rootsCount;
 }
 
 -(void)setupVBOs
@@ -220,6 +217,8 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
 {
     if (_vertexBuffer == 0 || _indexBuffer == 0)
         return;
+    
+    [self move];
     
     [self applyTranslationWithX:_movement.dx
                            andY:_movement.dy
@@ -316,13 +315,30 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
 
 -(void)repelAsteroid:(Asteroid *)asteroid
 {
-    CGVector vr = CGVectorMake(self.velocity.dx - asteroid.velocity.dx,
-                               self.velocity.dy - asteroid.velocity.dy);
-    CGVector vs = CGVectorMake(self.velocity.dx + asteroid.velocity.dx,
-                               self.velocity.dy + asteroid.velocity.dy);
+    CGPoint a = [self currentPosition:_center];
+    CGPoint b = [asteroid currentPosition:asteroid->_center];
     
-    self.velocity = CGVectorMake((vs.dx + vr.dx) / 2, (vs.dy + vr.dy) / 2);
-    asteroid.velocity = CGVectorMake((vs.dx - vr.dx) / 2, (vs.dy - vr.dy) / 2);
+    CGVector v1 = self.velocity;
+    CGVector v2 = asteroid.velocity;
+    
+    CGFloat m1 = _mass;
+    CGFloat m2 = asteroid->_mass;
+    
+    CGVector un = CGVectorMake(a.x - b.x, a.y - b.y);
+    CGFloat una = sqrtf(un.dx * un.dx + un.dy * un.dy);
+    un = CGVectorMake(un.dx / una, un.dy / una);
+    CGVector ut = CGVectorMake(-un.dy, un.dx);
+    
+    CGFloat v1n = v1.dx*un.dx + v1.dy*un.dy;
+    CGFloat v2n = v2.dx*un.dx + v2.dy*un.dy;
+    CGFloat v1t = v1.dx*ut.dx + v1.dy*ut.dy;
+    CGFloat v2t = v2.dx*ut.dx + v2.dy*ut.dy;
+    
+    CGFloat v1n2 = (v1n*(m1-m2) + 2*m2*v2n)/(m1+m2);
+    CGFloat v2n2 = (v2n*(m2-m1) + 2*m1*v1n)/(m1+m2);
+    
+    self.velocity = CGVectorMake(v1n2*un.dx + v1t*ut.dx, v1n2*un.dy + v1t*ut.dy);
+    asteroid.velocity = CGVectorMake(v2n2*un.dx + v2t*ut.dx, v2n2*un.dy + v2t*ut.dy);
 }
 
 -(NSArray*)produceChilds
