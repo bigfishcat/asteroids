@@ -34,6 +34,8 @@
 @synthesize scene;
 @synthesize spaceship;
 @synthesize fireButton;
+@synthesize crossButton;
+@synthesize playTable;
 
 -(id)initWithScene:(GLScene *)glScene
 {
@@ -90,11 +92,36 @@
     [_fireBlasts removeObject:blast];
 }
 
+-(void)restart
+{
+    for (Sprite * blast in [_fireBlasts copy])
+        [self removeBlast:blast];
+    for (Asteroid * asteroid in [_asteroids copy])
+        [self removeAsteroid:asteroid];
+    [self.spaceship resetPosition];
+}
+
+-(CGRect)shipFrame
+{
+    const CGFloat width = 108.f/128.f;
+    const CGFloat height = 172.f/256.f;
+    CGRect frame = self.spaceship.frame;
+    CGFloat dx = frame.size.width * width / 2;
+    CGFloat dy = frame.size.height * height / 2;
+    return CGRectMake(frame.origin.x + dx, frame.origin.y + dy,
+                      frame.size.width - 2 * dx, frame.size.height - 2 * dy);
+}
+
 -(void)processObjects
 {
     for (int i = 0; i < _asteroids.count; i++)
     {
         Asteroid * asteroid = [_asteroids objectAtIndex:i];
+        if ([asteroid intersectFrame:[self shipFrame]])
+        {
+            [self restart];
+            return;
+        }
         if (![asteroid isInHollow:self.scene.glFrame])
         {
             [self removeAsteroid:asteroid];

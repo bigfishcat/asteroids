@@ -154,4 +154,9 @@ ZOrderStack zOrderSet;
     return 1. / (1 - self.zOrder);
 }
 
+-(void)resetPosition
+{
+    _movement = CGVectorMake(0, 0);
+}
+
 @end

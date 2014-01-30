@@ -40,6 +40,8 @@ typedef struct
 
 -(void)onRemoveFromScene;
 
+-(void)resetPosition;
+
 +(void)resetOrder;
 
 @property (readonly) GLint zOrder;

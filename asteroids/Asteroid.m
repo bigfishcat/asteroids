@@ -14,6 +14,23 @@
 #define MIN_POINTS_COUNT 16
 #define MAX_POINTS_COUNT 32
 
+bool isIntersectBB(CGFloat a, CGFloat b, CGFloat c, CGFloat d)
+{
+	if (a > b)
+    {
+        a += b;
+        b -= a;
+        a -= b;
+    }
+	if (c > d)
+    {
+        c += d;
+        d -= c;
+        c -= d;
+    }
+	return fmaxf(a,c) <= fminf(b,d);
+}
+
 Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, CGPoint *out_intersection)
 {
     CGVector dir1 = CGVectorMake(end1.x - start1.x, end1.y - start1.y);
@@ -287,9 +304,8 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
     return NO;
 }
 
--(Boolean)intersectSprite:(Sprite*)sprite
+-(Boolean)intersectFrame:(CGRect)frame
 {
-    CGRect frame = sprite.frame;
     CGPoint rect[] = {
         CGPointMake(frame.origin.x, frame.origin.y),
         CGPointMake(frame.origin.x + frame.size.width, frame.origin.y),
@@ -305,12 +321,18 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
         for (int k = 0; k < 4; k++)
         {
             int n = k == 0 ? _rootsCount - 1 : k - 1;
-            if (isIntersect(a, b, rect[n], rect[k], nil))
-                return YES;
+            CGPoint intersection;
+            if (isIntersect(a, b, rect[n], rect[k], &intersection))
+                return CGRectContainsPoint(frame, intersection);
         }
     }
     
     return NO;
+}
+
+-(Boolean)intersectSprite:(Sprite*)sprite
+{
+    return [self intersectFrame:sprite.frame];
 }
 
 -(void)repelAsteroid:(Asteroid *)asteroid
