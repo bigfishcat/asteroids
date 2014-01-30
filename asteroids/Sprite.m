@@ -56,6 +56,8 @@
         NSString * nameNext = nil;
         do {
             nameNext = va_arg(params, NSString*);
+            if (nameNext == nil)
+                break;
             [self.spriteFrames addObject:
              [NSNumber numberWithUnsignedInt:[self loadTexture:nameNext]]];
         } while (nameNext);

@@ -80,13 +80,29 @@ ZOrderStack zOrderSet;
 
 - (GLuint)loadTexture:(NSString *)fileName;
 {
+    if (fileName == nil)
+        return 0;
+    
+    static NSMutableDictionary * textures = nil;
+    if (textures == nil)
+        textures = [NSMutableDictionary dictionary];
+    
+    NSNumber * cachedTexture = [textures objectForKey:fileName];
+    if (cachedTexture != nil)
+        return [cachedTexture unsignedIntValue];
+    
     NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@"png"];
     NSData *texData = [[NSData alloc] initWithContentsOfFile:path];
     CGImageRef image = [[UIImage alloc] initWithData:texData].CGImage;
-    return image ?
-    [self loadImage:image
-           withSize:CGSizeMake(CGImageGetWidth(image), CGImageGetHeight(image))] :
-    0;
+    if (image)
+    {
+        GLuint texture = [self loadImage:image
+                                withSize:CGSizeMake(CGImageGetWidth(image), CGImageGetHeight(image))];
+        [textures setObject:[NSNumber numberWithUnsignedInt:texture]
+                     forKey:fileName];
+        return texture;
+    }
+    return 0;
 }
 
 -(GLuint)loadImage:(CGImageRef)image withSize:(CGSize)size
