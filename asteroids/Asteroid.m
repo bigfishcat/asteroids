@@ -249,11 +249,6 @@ Boolean semiSign(CGPoint a, CGPoint b, CGPoint c)
         
 }
 
--(CGFloat) distance:(CGPoint)a from:(CGPoint)b
-{
-    return (a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y);
-}
-
 -(void)setupVBOs
 {
     glGenBuffers(1, &_vertexBuffer);

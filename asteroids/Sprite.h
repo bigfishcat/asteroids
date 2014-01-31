@@ -16,6 +16,7 @@
 -(void)moveBy:(CGVector)vector inRect:(CGRect)bound;
 -(void)changeSpriteFrameTo:(NSUInteger)index;
 -(Boolean)checkPoint:(CGPoint)point;
+-(CGFloat)distanceFromCenterToPoint:(CGPoint)point;
 -(Boolean)isInRect:(CGRect)rect;
 -(CGVector)relativeDirection:(CGPoint)point;
 

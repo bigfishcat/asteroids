@@ -152,6 +152,15 @@ const GLubyte Indices[] = {
     return CGRectContainsPoint(self.frame, point);
 }
 
+-(CGFloat)distanceFromCenterToPoint:(CGPoint)point
+{
+    CGRect frame = self.frame;
+    CGPoint center = CGPointMake(frame.origin.x + frame.size.width / 2,
+                                 frame.origin.y + frame.size.height / 2);
+    
+    return [self distance:center from:point];
+}
+
 -(CGRect)frame
 {
     return CGRectMake(_position.x + _movement.dx * self.scaleFactor,

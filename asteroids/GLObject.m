@@ -159,4 +159,9 @@ ZOrderStack zOrderSet;
     _movement = CGVectorMake(0, 0);
 }
 
+-(CGFloat) distance:(CGPoint)a from:(CGPoint)b
+{
+    return (a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y);
+}
+
 @end

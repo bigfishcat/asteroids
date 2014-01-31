@@ -42,6 +42,8 @@ typedef struct
 
 -(void)resetPosition;
 
+-(CGFloat) distance:(CGPoint)a from:(CGPoint)b;
+
 +(void)resetOrder;
 
 @property (readonly) GLint zOrder;
