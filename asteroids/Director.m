@@ -144,7 +144,7 @@
         
         for (Asteroid * asteroid in [_asteroids copy])
         {
-            if ([asteroid intersectSprite:blast])
+            if ([asteroid intersectAsCircleSprite:blast])
             {
                 [self removeBlast:blast];
                 if (asteroid.toughness > 1)

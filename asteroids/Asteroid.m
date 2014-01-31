@@ -45,13 +45,43 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
     return YES;
 }
 
+Boolean isCircleIntersect(CGPoint center, CGFloat radius, CGPoint a, CGPoint b, CGFloat l)
+{
+    double xv = (b.x - a.x)/l;
+    double yv = (b.y - a.y)/l;
+    double xd = a.x - center.x;
+    double yd = a.y - center.y;
+    double B = 2*(xd*xv + yd*yv);
+    double C = xd*xd +yd*yd - radius*radius;
+    double D = B*B - 4*C;
+    if (D < 0)
+        return false;
+    
+    D = sqrtf(D);
+    double l1 = (-B + D) * 0.5;
+    double l2 = (-B - D) * 0.5;
+    return (l1 >= 0 && l1 <= l) || (l2 >= 0 && l2 <= l);
+}
+
+CGFloat orient(CGPoint a, CGPoint b, CGPoint c)
+{
+    return (b.x - a.x)*(c.y - b.y) - (b.y - a.y)*(c.x - b.x);
+}
+
+Boolean semiSign(CGPoint a, CGPoint b, CGPoint c)
+{
+    return orient(a, b, c) >= 0;
+}
+
 @interface Asteroid()
 {
     Vertex _roots[MIN_POINTS_COUNT];
     GLubyte _indices[MIN_POINTS_COUNT];
     GLint _rootsCount;
     GLfloat _mass;
+    CGFloat _radius;
     CGPoint _center;
+    CFTimeInterval _lastRenderTime;
 }
 
 @property (readwrite) NSInteger toughness;
@@ -73,6 +103,7 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
         self.velocity = velocity;
         const CGFloat a = (arc4random() % 25  + 25) / 400. * t;
         _mass = a * a;
+        _radius = a / 2;
         _position = position;
         CGRect area = CGRectMake(position.x, position.y, a, a);
         int pointCount = arc4random() % (MAX_POINTS_COUNT - MIN_POINTS_COUNT) +
@@ -98,7 +129,12 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
 
 -(void)move
 {
-    [self moveBy:CGVectorMake(self.velocity.dx / DT, self.velocity.dy / DT)];
+    CFTimeInterval current = CACurrentMediaTime();
+    CFTimeInterval dt = current - _lastRenderTime;
+    if (dt < .1 || dt > 1)
+        dt = DT;
+    [self moveBy:CGVectorMake(self.velocity.dx / dt, self.velocity.dy / dt)];
+    _lastRenderTime = current;
 }
 
 -(void)onRemoveFromScene
@@ -121,11 +157,6 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
     int y = arc4random() % (int)(rect.size.height * precision) +
         (int)(rect.origin.y * precision);
     return CGPointMake(x * 1. / precision, y * 1. / precision);
-}
-
--(CGFloat)rotate:(CGPoint)a andPoint:(CGPoint)b withPoint:(CGPoint)c
-{
-    return (b.x - a.x)*(c.y - b.y) - (b.y - a.y)*(c.x - b.x);
 }
 
 -(int)findLeftPointInArray:(CGPoint*)points withSize:(int)count
@@ -160,9 +191,7 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
         {
             NSInteger rightPoint = [[pointIndexes objectAtIndex:right] integerValue];
             NSInteger currentPoint = [[pointIndexes objectAtIndex:i] integerValue];
-            if ([self rotate:points[lastRoot]
-                    andPoint:points[rightPoint]
-                   withPoint:points[currentPoint]] < 0)
+            if (orient(points[lastRoot], points[rightPoint], points[currentPoint]) < 0)
                 right = i;
         }
         
@@ -196,6 +225,33 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
     }
     _center.x /= _rootsCount;
     _center.y /= _rootsCount;
+    
+    int max = 0;
+    for (int i = 1; i < rootIndexes.count; i++)
+    {
+        CGFloat x1 = _roots[i].Position[0];
+        CGFloat y1 = _roots[i].Position[1];
+        CGFloat r1 = [self distance:_center from:CGPointMake(x1, y1)];
+        CGFloat x2 = _roots[max].Position[0];
+        CGFloat y2 = _roots[max].Position[1];
+        CGFloat r2 = [self distance:_center from:CGPointMake(x2, y2)];
+        
+        if (r2 < r1)
+        {
+            _radius = sqrtf(r1) * self.scaleFactor;
+            max = i;
+        }
+        else
+        {
+            _radius = sqrtf(r2) * self.scaleFactor;
+        }
+    }
+        
+}
+
+-(CGFloat) distance:(CGPoint)a from:(CGPoint)b
+{
+    return (a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y);
 }
 
 -(void)setupVBOs
@@ -254,7 +310,7 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
 
 -(Boolean)isInHollow:(CGRect)hollow
 {
-    GLfloat y = _position.y + _movement.dy * self.scaleFactor;
+    GLfloat y = (_center.y + _movement.dy) * self.scaleFactor;
     if (y + 0.001 > hollow.origin.y + hollow.size.height)
         return true;
     
@@ -270,6 +326,14 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
 
 -(Boolean)intersectAsteroid:(Asteroid*)asteroid
 {
+    CGRect frame1 = self.frame;
+    CGRect frame2 = asteroid.frame;
+    
+    if (!CGRectIntersectsRect(frame1, frame2)&&
+        !CGRectContainsRect(frame1, frame2) &&
+        !CGRectContainsRect(frame2, frame1))
+        return NO;
+    
     for (int i = 0; i < _rootsCount; i++)
     {
         int m = i == 0 ? _rootsCount - 1 : i - 1;
@@ -280,7 +344,8 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
             int n = k == 0 ? _rootsCount - 1 : k - 1;
             CGPoint c = [asteroid currentPositionWithVertex:asteroid->_roots[n]];
             CGPoint d = [asteroid currentPositionWithVertex:asteroid->_roots[k]];
-            if (isIntersect(a, b, c, d, nil))
+            CGPoint intersection;
+            if (isIntersect(a, b, c, d, &intersection))
                 return YES;
         }
     }
@@ -289,6 +354,11 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
 
 -(Boolean)intersectFrame:(CGRect)frame
 {
+    if (!CGRectIntersectsRect(frame, self.frame) &&
+        !CGRectContainsRect(frame, self.frame) &&
+        !CGRectContainsRect(self.frame, frame))
+        return NO;
+    
     CGPoint rect[] = {
         CGPointMake(frame.origin.x, frame.origin.y),
         CGPointMake(frame.origin.x + frame.size.width, frame.origin.y),
@@ -304,9 +374,8 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
         for (int k = 0; k < 4; k++)
         {
             int n = k == 0 ? _rootsCount - 1 : k - 1;
-            CGPoint intersection;
-            if (isIntersect(a, b, rect[n], rect[k], &intersection))
-                return CGRectContainsPoint(frame, intersection);
+            if (isIntersect(a, b, rect[n], rect[k], nil))
+                return YES;
         }
     }
     
@@ -316,6 +385,42 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
 -(Boolean)intersectSprite:(Sprite*)sprite
 {
     return [self intersectFrame:sprite.frame];
+}
+
+-(Boolean)intersectAsCircleSprite:(Sprite*)sprite
+{
+    CGRect frame = sprite.frame;
+    CGPoint c = [self currentPosition:_center];
+    
+    CGPoint rect[] = {
+        CGPointMake(frame.origin.x, frame.origin.y),
+        CGPointMake(frame.origin.x + frame.size.width, frame.origin.y),
+        CGPointMake(frame.origin.x, frame.origin.y + frame.size.height),
+        CGPointMake(frame.origin.x + frame.size.width, frame.origin.y + frame.size.height)
+    };
+    
+    CGPoint indot = CGPointMake(frame.origin.x + frame.size.width / 2,
+                                frame.origin.y + frame.size.height / 2);
+    
+    int inside = 0;
+    
+    for (int i = 0; i < 4; i++)
+    {
+        int m = i == 0 ? _rootsCount - 1 : i - 1;
+        if (semiSign(rect[i], rect[m], indot) == semiSign(rect[i], rect[m], c))
+            inside++;
+        if (isCircleIntersect(c, _radius, rect[i], rect[m],
+                              sqrtf([self distance:rect[i] from:rect[m]])))
+            return YES;
+    }
+    
+    if (inside == 4)
+        return YES;
+    
+    if ([self distance:c from:indot] < _radius * _radius)
+        return YES;
+    
+    return NO;
 }
 
 -(void)repelAsteroid:(Asteroid *)asteroid
@@ -364,6 +469,12 @@ Boolean isIntersect(CGPoint start1, CGPoint end1, CGPoint start2, CGPoint end2, 
     }
     
     return [NSArray arrayWithArray:childs];
+}
+
+-(CGRect) frame
+{
+    CGPoint c = [self currentPosition:_center];
+    return CGRectMake(c.x - _radius, c.y - _radius, c.x + _radius, c.y + _radius);
 }
 
 @end

@@ -17,11 +17,14 @@
 -(Boolean)isInHollow:(CGRect)hollow;
 -(Boolean)intersectAsteroid:(Asteroid*)asteroid;
 -(Boolean)intersectSprite:(Sprite*)sprite;
+-(Boolean)intersectAsCircleSprite:(Sprite*)sprite;
 -(Boolean)intersectFrame:(CGRect)frame;
 -(void)repelAsteroid:(Asteroid*)asteroid;
 -(NSArray*)produceChilds;
 
 @property (readonly) NSInteger toughness;
 @property CGVector velocity;
+
+@property (nonatomic, readonly) CGRect frame;
 
 @end
