@@ -70,7 +70,7 @@
                                                                  selector:@selector(render:)];
         [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         
-        _asteroidLauncher = [NSTimer scheduledTimerWithTimeInterval:0.3
+        _asteroidLauncher = [NSTimer scheduledTimerWithTimeInterval:0.4
                                                              target:self
                                                            selector:@selector(createAsteroid:)
                                                            userInfo:nil
@@ -178,7 +178,7 @@
 {
     CGRect r = self.scene.glFrame;
     CGPoint initPoint = CGPointMake(arc4random() % 200 / 100. - 1., r.origin.y + r.size.height);
-    CGVector initVelocity = CGVectorMake(arc4random() % 20 / 30000. - .0003, arc4random() % 20 / 30000. - .001);
+    CGVector initVelocity = CGVectorMake(arc4random() % 20 / 40000. - .0002, arc4random() % 20 / 40000. - .0007);
     Asteroid * asteroid = [[Asteroid alloc]
                            initWithPosition:initPoint
                                 andVelocity:initVelocity];
