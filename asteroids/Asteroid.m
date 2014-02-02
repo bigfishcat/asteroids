@@ -469,7 +469,7 @@ Boolean semiSign(CGPoint a, CGPoint b, CGPoint c)
 -(CGRect) frame
 {
     CGPoint c = [self currentPosition:_center];
-    return CGRectMake(c.x - _radius, c.y - _radius, c.x + _radius, c.y + _radius);
+    return CGRectMake(c.x - _radius, c.y - _radius, 2 * _radius, 2 * _radius);
 }
 
 @end
